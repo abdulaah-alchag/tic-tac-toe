@@ -44,5 +44,32 @@ function turn(squareId, player) {
 	//show the player who took a turn on this spot 
 
 	document.getElementById(squareId).innerText = player; //update the display so we see where just clicked
+
+	let gameWon = checkWin(origBoard, player) //when turn is taken check if the game has been won 
+	if (gameWon) gameOver(gameWon)
+}
+
+function checkWin(board, player) {
+	let plays = board.reduce((a, e, i) =>   // find the places on the board that already been played in
+		(e === player) ? a.concat(i) : a, []); // a is the value that we get back in the end , e is the elemnt in the array, i is index
+	let gameWon = null;
+	for (let [index, win] of winCombos.entries()) {
+		if (win.every(elem => plays.indexOf(elem) > -1)) {
+			gameWon = {index: index, player: player};
+			break;
+		}
+	}
+	return gameWon;
+}
+
+function gameOver(gameWon) {
+	for (let index of winCombos[gameWon.index]) {
+		document.getElementById(index).style.backgroundColor =   //highlight the winning squers 
+			gameWon.player == huPlayer ? "blue" : "red";
+	}
+
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].removeEventListener('click', turnClick, false);
+	}
 }
 
